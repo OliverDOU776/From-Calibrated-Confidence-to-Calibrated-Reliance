@@ -125,7 +125,7 @@ $$
 RCE summarizes deviations from that ideal:
 
 $$
-\operatorname{RCE}(g)=\mathbb{E}\left[\left|\eta_g(D_g)-D_g\right|\right].
+\mathrm{RCE}(g)=\mathbb{E}\left[\left|\eta_g(D_g)-D_g\right|\right].
 $$
 
 The distinction matters empirically: in the primary HAIID condition, conventional model ECE is
