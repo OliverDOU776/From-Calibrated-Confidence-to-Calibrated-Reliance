@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/architecture.svg" width="960" alt="Human-aware confidence communication and evaluation framework">
+  <img src="docs/assets/calibrated_reliance_teaser.webp" width="960" alt="Calibrated reliance teaser: from model confidence to better human-AI team decisions">
 </p>
 
 <h1 align="center">From Calibrated Confidence to Calibrated Reliance</h1>
