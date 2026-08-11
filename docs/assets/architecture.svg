@@ -1,118 +1,111 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="600" viewBox="0 0 1280 600" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="680" viewBox="0 0 1360 680" role="img" aria-labelledby="title desc">
   <title id="title">Human-aware confidence communication and evaluation framework</title>
-  <desc id="desc">Model confidence and user state enter one of four display policies. The resulting display, initial human judgment, and AI advice enter a learned reliance model, which produces a policy-specific team response evaluated with team loss and reliance calibration error.</desc>
+  <desc id="desc">Model confidence and user state enter one of four confidence-display policies. The resulting display, initial judgment, and AI advice enter a learned reliance model. The expected team response is evaluated with team decision loss and Reliance Calibration Error.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f7f5ff"/>
-      <stop offset="1" stop-color="#eef7ff"/>
-    </linearGradient>
-    <linearGradient id="policy" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#ede9fe"/>
-      <stop offset="1" stop-color="#e0f2fe"/>
-    </linearGradient>
-    <linearGradient id="result" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#dcfce7"/>
-      <stop offset="1" stop-color="#dbeafe"/>
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1e293b" flood-opacity="0.12"/>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#334155" flood-opacity="0.11"/>
     </filter>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#64748b"/>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#64748b"/>
     </marker>
     <style>
-      .heading { font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 700; fill: #172554; }
+      .heading { font-family: Arial, Helvetica, sans-serif; font-size: 25px; font-weight: 700; fill: #172554; }
       .label { font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 700; fill: #1e293b; }
-      .small { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: #475569; }
-      .math { font-family: Georgia, serif; font-size: 17px; font-style: italic; fill: #1e293b; }
-      .metric { font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 700; fill: #075985; }
+      .body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: #475569; }
+      .math { font-family: Georgia, serif; font-size: 16px; font-style: italic; fill: #334155; }
+      .metric { font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; fill: #075985; }
       .arrow { stroke: #64748b; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
     </style>
   </defs>
 
-  <rect width="1280" height="600" rx="28" fill="#f8fafc"/>
-  <rect x="18" y="18" width="1244" height="564" rx="24" fill="none" stroke="#a78bfa" stroke-width="2"/>
-  <line x1="640" y1="38" x2="640" y2="562" stroke="#c4b5fd" stroke-width="2"/>
+  <rect width="1360" height="680" rx="30" fill="#f8fafc"/>
+  <rect x="18" y="18" width="1324" height="644" rx="26" fill="none" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="680" y1="42" x2="680" y2="638" stroke="#c4b5fd" stroke-width="2"/>
 
-  <text x="320" y="66" text-anchor="middle" class="heading">1 · Shape the confidence display</text>
-  <text x="960" y="66" text-anchor="middle" class="heading">2 · Evaluate the team response</text>
+  <text x="340" y="69" text-anchor="middle" class="heading">1 · Shape the confidence display</text>
+  <text x="1020" y="69" text-anchor="middle" class="heading">2 · Evaluate the team response</text>
 
-  <!-- Inputs -->
-  <rect x="54" y="96" width="190" height="76" rx="14" fill="#ffffff" stroke="#93c5fd" filter="url(#shadow)"/>
-  <circle cx="88" cy="134" r="20" fill="#dbeafe" stroke="#2563eb"/>
-  <text x="88" y="140" text-anchor="middle" class="metric">80%</text>
-  <text x="118" y="126" class="label">Model confidence</text>
-  <text x="118" y="149" class="math">c ∈ [0, 1]</text>
+  <!-- Inputs to the policy -->
+  <rect x="52" y="104" width="258" height="88" rx="15" fill="#ffffff" stroke="#60a5fa" filter="url(#shadow)"/>
+  <circle cx="93" cy="148" r="23" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="93" y="154" text-anchor="middle" class="metric">80%</text>
+  <text x="130" y="139" class="label">Model confidence</text>
+  <text x="130" y="166" class="math">c ∈ [0, 1]</text>
 
-  <rect x="274" y="96" width="190" height="76" rx="14" fill="#ffffff" stroke="#fbbf24" filter="url(#shadow)"/>
-  <circle cx="308" cy="134" r="20" fill="#fef3c7" stroke="#d97706"/>
-  <path d="M297 141 Q308 125 319 141" fill="none" stroke="#92400e" stroke-width="2"/>
-  <circle cx="303" cy="130" r="2" fill="#92400e"/><circle cx="313" cy="130" r="2" fill="#92400e"/>
-  <text x="338" y="126" class="label">User state</text>
-  <text x="338" y="149" class="math">u: pre-advice signal</text>
+  <rect x="342" y="104" width="270" height="88" rx="15" fill="#ffffff" stroke="#fbbf24" filter="url(#shadow)"/>
+  <circle cx="383" cy="148" r="23" fill="#fef3c7" stroke="#d97706"/>
+  <path d="M371 157 Q383 138 395 157" fill="none" stroke="#92400e" stroke-width="2"/>
+  <circle cx="377" cy="142" r="2" fill="#92400e"/>
+  <circle cx="389" cy="142" r="2" fill="#92400e"/>
+  <text x="420" y="139" class="label">User state</text>
+  <text x="420" y="163" class="math">u</text>
+  <text x="438" y="163" class="body">(pre-advice signal)</text>
 
-  <path d="M149 172 L149 205 L225 205" class="arrow"/>
-  <path d="M369 172 L369 205 L293 205" class="arrow"/>
+  <path d="M181 192 L181 222 L254 222 L254 244" class="arrow"/>
+  <path d="M477 192 L477 222 L404 222 L404 244" class="arrow"/>
 
   <!-- Policy family -->
-  <rect x="76" y="216" width="484" height="258" rx="20" fill="#eef2ff" stroke="#818cf8" filter="url(#shadow)"/>
-  <text x="318" y="247" text-anchor="middle" class="label">Confidence-display policy  d = g(c, u)</text>
+  <rect x="52" y="246" width="538" height="306" rx="21" fill="#eef2ff" stroke="#818cf8" filter="url(#shadow)"/>
+  <text x="321" y="279" text-anchor="middle" class="label">Confidence-display policy · d = g(c, u)</text>
 
-  <rect x="100" y="266" width="208" height="76" rx="12" fill="#ffffff" stroke="#94a3b8"/>
-  <text x="118" y="294" class="label">g0 · Direct</text>
-  <text x="118" y="320" class="math">d = c</text>
+  <rect x="78" y="304" width="238" height="94" rx="13" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="98" y="334" class="label">g0 · Direct</text>
+  <text x="98" y="367" class="math">d = c</text>
 
-  <rect x="328" y="266" width="208" height="76" rx="12" fill="#ffffff" stroke="#60a5fa"/>
-  <text x="346" y="294" class="label">g1 · Global</text>
-  <text x="346" y="320" class="math">d = clip(2.4c − 0.5)</text>
+  <rect x="338" y="304" width="226" height="94" rx="13" fill="#ffffff" stroke="#60a5fa"/>
+  <text x="358" y="334" class="label">g1 · Global</text>
+  <text x="358" y="367" class="math">d = clip(2.4c − 0.5)</text>
 
-  <rect x="100" y="362" width="208" height="82" rx="12" fill="#ffffff" stroke="#c084fc"/>
-  <text x="118" y="390" class="label">g2 · User-state aware</text>
-  <text x="118" y="415" class="small">isotonic by confidence tercile</text>
+  <rect x="78" y="424" width="238" height="100" rx="13" fill="#ffffff" stroke="#c084fc"/>
+  <text x="98" y="454" class="label">g2 · User-state aware</text>
+  <text x="98" y="480" class="body">Isotonic map by pre-advice</text>
+  <text x="98" y="501" class="body">self-confidence tercile</text>
 
-  <rect x="328" y="362" width="208" height="82" rx="12" fill="#ffffff" stroke="#34d399"/>
-  <text x="346" y="390" class="label">g3 · Bounded guard</text>
-  <text x="346" y="415" class="math">d = clip(g1(c), 0.15, 0.85)</text>
+  <rect x="338" y="424" width="226" height="100" rx="13" fill="#ffffff" stroke="#34d399"/>
+  <text x="358" y="454" class="label">g3 · Bounded</text>
+  <text x="358" y="480" class="math">d = clip(g1(c),</text>
+  <text x="358" y="503" class="math">0.15, 0.85)</text>
 
-  <path d="M560 345 L600 345" class="arrow"/>
-  <rect x="570" y="295" width="62" height="100" rx="16" fill="#ecfdf5" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
-  <text x="601" y="326" text-anchor="middle" class="small">shown</text>
-  <text x="601" y="356" text-anchor="middle" class="metric">d</text>
-  <text x="601" y="379" text-anchor="middle" class="small">confidence</text>
+  <path d="M590 399 L618 399" class="arrow"/>
+  <rect x="616" y="343" width="48" height="112" rx="16" fill="#ecfdf5" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+  <text x="640" y="372" text-anchor="middle" class="body">shown</text>
+  <text x="640" y="408" text-anchor="middle" class="metric">d</text>
+  <text x="640" y="434" text-anchor="middle" class="body">score</text>
 
   <!-- Evaluation inputs -->
-  <rect x="684" y="100" width="164" height="72" rx="14" fill="#ffffff" stroke="#fbbf24" filter="url(#shadow)"/>
-  <text x="766" y="128" text-anchor="middle" class="label">Initial judgment</text>
-  <text x="766" y="152" text-anchor="middle" class="math">r1</text>
+  <rect x="716" y="108" width="184" height="88" rx="15" fill="#ffffff" stroke="#fbbf24" filter="url(#shadow)"/>
+  <text x="808" y="141" text-anchor="middle" class="label">Initial judgment</text>
+  <text x="808" y="169" text-anchor="middle" class="math">r1</text>
 
-  <rect x="868" y="100" width="164" height="72" rx="14" fill="#ffffff" stroke="#93c5fd" filter="url(#shadow)"/>
-  <text x="950" y="128" text-anchor="middle" class="label">AI advice</text>
-  <text x="950" y="152" text-anchor="middle" class="math">a</text>
+  <rect x="922" y="108" width="184" height="88" rx="15" fill="#ffffff" stroke="#60a5fa" filter="url(#shadow)"/>
+  <text x="1014" y="141" text-anchor="middle" class="label">AI advice</text>
+  <text x="1014" y="169" text-anchor="middle" class="math">a</text>
 
-  <rect x="1052" y="100" width="164" height="72" rx="14" fill="#ffffff" stroke="#34d399" filter="url(#shadow)"/>
-  <text x="1134" y="128" text-anchor="middle" class="label">Display policy</text>
-  <text x="1134" y="152" text-anchor="middle" class="math">d = g(c, u)</text>
+  <rect x="1128" y="108" width="184" height="88" rx="15" fill="#ffffff" stroke="#34d399" filter="url(#shadow)"/>
+  <text x="1220" y="139" text-anchor="middle" class="label">Shown confidence</text>
+  <text x="1220" y="169" text-anchor="middle" class="math">d = g(c, u)</text>
 
-  <path d="M766 172 L766 216 L856 216" class="arrow"/>
-  <path d="M950 172 L950 216" class="arrow"/>
-  <path d="M1134 172 L1134 216 L1044 216" class="arrow"/>
+  <path d="M808 196 L808 230 L918 230 L918 256" class="arrow"/>
+  <path d="M1014 196 L1014 256" class="arrow"/>
+  <path d="M1220 196 L1220 230 L1110 230 L1110 256" class="arrow"/>
 
-  <!-- Reliance model -->
-  <rect x="754" y="228" width="392" height="105" rx="18" fill="#ffffff" stroke="#818cf8" stroke-width="2" filter="url(#shadow)"/>
-  <text x="950" y="263" text-anchor="middle" class="label">Learned reliance model</text>
-  <text x="950" y="292" text-anchor="middle" class="math">π(d, x, u) = P(move toward advice)</text>
-  <text x="950" y="316" text-anchor="middle" class="small">fitted on observed human–AI interactions</text>
+  <!-- Reliance model and outcomes -->
+  <rect x="786" y="258" width="456" height="116" rx="19" fill="#ffffff" stroke="#818cf8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1014" y="293" text-anchor="middle" class="label">Learned reliance model</text>
+  <text x="1014" y="324" text-anchor="middle" class="math">π(d, x, u) = P(move toward advice)</text>
+  <text x="1014" y="349" text-anchor="middle" class="body">fitted on observed human–AI interactions</text>
 
-  <path d="M950 333 L950 374" class="arrow"/>
-  <rect x="736" y="386" width="428" height="92" rx="18" fill="#ecfdf5" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
-  <text x="950" y="418" text-anchor="middle" class="label">Policy-specific expected team response</text>
-  <text x="950" y="452" text-anchor="middle" class="math">r2(g) = r1 + π(d, x, u) · (a − r1)</text>
+  <path d="M1014 374 L1014 411" class="arrow"/>
+  <rect x="764" y="413" width="500" height="106" rx="19" fill="#ecfdf5" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1014" y="450" text-anchor="middle" class="label">Policy-specific expected team response</text>
+  <text x="1014" y="486" text-anchor="middle" class="math">r2(g) = r1 + π(d, x, u) · (a − r1)</text>
 
-  <path d="M884 478 L820 517" class="arrow"/>
-  <path d="M1016 478 L1080 517" class="arrow"/>
+  <path d="M930 519 L858 563" class="arrow"/>
+  <path d="M1098 519 L1170 563" class="arrow"/>
 
-  <rect x="702" y="516" width="218" height="48" rx="14" fill="#ffffff" stroke="#f59e0b"/>
-  <text x="811" y="546" text-anchor="middle" class="metric">Team decision loss</text>
-  <rect x="980" y="516" width="218" height="48" rx="14" fill="#ffffff" stroke="#0ea5e9"/>
-  <text x="1089" y="546" text-anchor="middle" class="metric">Reliance Calibration Error</text>
+  <rect x="708" y="570" width="292" height="60" rx="15" fill="#ffffff" stroke="#f59e0b"/>
+  <text x="854" y="606" text-anchor="middle" class="metric">Team decision loss</text>
+  <rect x="1028" y="570" width="300" height="60" rx="15" fill="#ffffff" stroke="#0ea5e9"/>
+  <text x="1178" y="594" text-anchor="middle" class="metric">Reliance Calibration</text>
+  <text x="1178" y="615" text-anchor="middle" class="metric">Error (RCE)</text>
 </svg>

@@ -8,7 +8,9 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -70,6 +72,65 @@ class ReproductionInputTests(unittest.TestCase):
         frame.loc[0, "participant_id"] = " "
         with self.assertRaisesRegex(ValueError, "participant_id.*missing or blank"):
             self.prepare(frame)
+
+    def test_relative_reduction_sign_convention(self) -> None:
+        self.assertAlmostEqual(REPRODUCE.relative_reduction_pct(2.0, 1.0), 50.0)
+        self.assertAlmostEqual(REPRODUCE.relative_reduction_pct(1.0, 1.25), -25.0)
+        with self.assertRaisesRegex(ValueError, "baseline must be positive"):
+            REPRODUCE.relative_reduction_pct(0.0, 0.0)
+
+    def test_task_user_state_sensitivity_has_canonical_long_schema(self) -> None:
+        frame = pd.DataFrame(
+            {
+                "task_name": [
+                    "art",
+                    "art",
+                    "sarcasm",
+                    "sarcasm",
+                    "cities",
+                    "cities",
+                    "census",
+                    "census",
+                ],
+                "pre_conf_tercile": ["low", "mid", "high", "low"] * 2,
+                "advice_prob": [0.2, 0.8, 0.3, 0.7, 0.4, 0.6, 0.1, 0.9],
+                "correct_post": [0, 1, 0, 1, 0, 1, 0, 1],
+            }
+        )
+
+        def mean_display(_pipe, _frame, displayed):
+            return float(np.mean(displayed)), 0.0, 0.0
+
+        with mock.patch.object(
+            REPRODUCE, "team_mse_and_rce", side_effect=mean_display
+        ), mock.patch.object(
+            REPRODUCE,
+            "rce_from_values",
+            side_effect=lambda displayed, *_args, **_kwargs: float(np.mean(displayed)),
+        ):
+            table = REPRODUCE.task_user_state_sensitivity(object(), frame)
+
+        self.assertEqual(
+            list(table.columns),
+            [
+                "Stratum_type",
+                "Stratum",
+                "n",
+                "Metric",
+                "g0",
+                "g1",
+                "g1_relative_reduction_pct",
+            ],
+        )
+        self.assertEqual(len(table), 11)
+        self.assertEqual(
+            table.groupby("Stratum_type")["Metric"].count().to_dict(),
+            {"pre_conf_tercile": 3, "task": 8},
+        )
+        self.assertEqual(
+            set(table.loc[table["Stratum_type"] == "pre_conf_tercile", "Metric"]),
+            {"model_predicted_team_mse"},
+        )
 
 
 if __name__ == "__main__":
