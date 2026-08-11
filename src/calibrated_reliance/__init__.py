@@ -1,0 +1,78 @@
+"""Tools for human-aware confidence communication and calibrated reliance."""
+
+from .data import (
+    DERIVED_COLUMNS,
+    MAIN_PERCEIVED_ACCURACY,
+    MAIN_TASKS,
+    RAW_REQUIRED_COLUMNS,
+    derive_haiid_features,
+    load_haiid,
+    prepare_haiid,
+    self_confidence_terciles,
+    validate_haiid,
+)
+from .metrics import ReliabilityBin, rce, reliability_bins, reliance_calibration_error
+from .model import (
+    CATEGORICAL_FEATURES,
+    NUMERIC_FEATURES,
+    CounterfactualEvaluation,
+    build_feature_frame,
+    counterfactual_rce,
+    counterfactual_response,
+    evaluate_policy,
+    fit_reliance_model,
+    make_reliance_pipeline,
+    predict_reliance,
+    team_mse,
+    team_mse_and_rce,
+)
+from .policies import (
+    TERCILE_LABELS,
+    SelfConfidenceIsotonicPolicy,
+    apply_g2,
+    bounded_g1,
+    bounded_shift,
+    fit_g2,
+    g0,
+    g1,
+    g3,
+)
+
+__version__ = "1.0.0"
+
+__all__ = [
+    "CATEGORICAL_FEATURES",
+    "CounterfactualEvaluation",
+    "DERIVED_COLUMNS",
+    "MAIN_PERCEIVED_ACCURACY",
+    "MAIN_TASKS",
+    "NUMERIC_FEATURES",
+    "RAW_REQUIRED_COLUMNS",
+    "ReliabilityBin",
+    "SelfConfidenceIsotonicPolicy",
+    "TERCILE_LABELS",
+    "apply_g2",
+    "bounded_g1",
+    "bounded_shift",
+    "build_feature_frame",
+    "counterfactual_rce",
+    "counterfactual_response",
+    "derive_haiid_features",
+    "evaluate_policy",
+    "fit_g2",
+    "fit_reliance_model",
+    "g0",
+    "g1",
+    "g3",
+    "load_haiid",
+    "make_reliance_pipeline",
+    "predict_reliance",
+    "prepare_haiid",
+    "rce",
+    "reliance_calibration_error",
+    "reliability_bins",
+    "self_confidence_terciles",
+    "team_mse",
+    "team_mse_and_rce",
+    "validate_haiid",
+]

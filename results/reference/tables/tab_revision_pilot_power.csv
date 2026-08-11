@@ -1,0 +1,5 @@
+Target_metric,Observed_control,Observed_treatment,Observed_effect_abs,Planning_SD_assumption,Approx_N_per_condition_for_80pct_power
+RCE reduction,0.188,0.156,0.032,0.1,154
+Over-reliance reduction,0.24,0.195,0.044999999999999984,0.2,311
+Accuracy improvement,0.74,0.75,0.010000000000000009,0.22,7598
+High-conf harm,0.024,0.0,0.024,0.18,883

@@ -1,0 +1,6 @@
+# Environment used for the release-package verification run on Python 3.12.3.
+numpy==2.4.6
+pandas==3.0.3
+scipy==1.17.1
+scikit-learn==1.9.0
+matplotlib==3.10.9

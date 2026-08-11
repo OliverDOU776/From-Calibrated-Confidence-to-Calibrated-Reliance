@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the accepted paper below."
+title: "Calibrated Reliance: Reproducibility Package"
+type: software
+version: 1.0.0
+date-released: 2026-08-11
+license: MIT
+authors:
+  - family-names: Wang
+    given-names: Zijia
+    affiliation: University of Oxford and Imperial College London
+  - family-names: Hu
+    given-names: Kejia
+    affiliation: University of Oxford
+repository-code: "https://github.com/OliverDOU776/From-Calibrated-Confidence-to-Calibrated-Reliance"
+preferred-citation:
+  type: article
+  title: "From Calibrated Confidence to Calibrated Reliance: Human-Aware Confidence Communication for AI-Assisted Decision Making"
+  authors:
+    - family-names: Wang
+      given-names: Zijia
+    - family-names: Hu
+      given-names: Kejia
+  journal: ACM Transactions on Social Computing
+  year: 2026

@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Local environments and editor state
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*token*
+*.pem
+*.key
+
+# Downloaded third-party data and generated outputs
+data/raw/*
+!data/raw/.gitkeep
+results/generated/*
+!results/generated/.gitkeep
+outputs/
+
+# Local packaging and manuscript artifacts
+*.zip
+*.tar.gz
+*.log
+*.aux
+*.out
+*.fdb_latexmk
+*.fls
