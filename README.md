@@ -26,6 +26,89 @@ This repository provides the accepted paper's CPU-only offline analysis, the imp
 **Reliance Calibration Error (RCE)**, the `g0`-`g3` confidence-display policies, deterministic data
 setup, compact reference outputs, and numerical regression checks.
 
+## Quick start: use the policies
+
+Install the package from a local clone; using the policy and metric APIs does **not** require the
+HAIID dataset.
+
+```bash
+git clone https://github.com/OliverDOU776/From-Calibrated-Confidence-to-Calibrated-Reliance.git
+cd From-Calibrated-Confidence-to-Calibrated-Reliance
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+```
+
+Apply the three fixed display policies and compute RCE on your own logged team outcomes:
+
+```python
+import numpy as np
+
+from calibrated_reliance import bounded_g1, g0, g1, g3, rce
+
+confidence = np.array([0.35, 0.55, 0.80])
+final_team_correct = np.array([0, 1, 1])
+
+displayed = {
+    "g0_direct": g0(confidence),
+    "g1_global": g1(confidence),
+    "g3_bounded": g3(confidence),
+    "g1_max_shift_10pct": bounded_g1(confidence, delta=0.10),
+}
+
+for name, values in displayed.items():
+    print(name, values, "RCE =", rce(values, final_team_correct))
+```
+
+Fit `g2` on training interactions, then apply it to held-out or future interactions. The three
+aligned training arrays are model confidence, pre-advice self-confidence, and final team
+correctness:
+
+```python
+from calibrated_reliance import apply_g2, fit_g2
+
+g2_policy = fit_g2(
+    confidence_train,
+    self_confidence_train,
+    final_team_correct_train,
+)
+display_g2 = apply_g2(g2_policy, confidence_test, self_confidence_test)
+```
+
+To compare a display under the paper's fitted human-reliance model, use prepared HAIID-format
+training and test frames:
+
+```python
+from calibrated_reliance import evaluate_policy, fit_reliance_model, g3
+
+reliance_model = fit_reliance_model(train)
+display_g3 = g3(test["advice_prob"])
+evaluation = evaluate_policy(reliance_model, test, display_g3)
+
+print(evaluation.mse, evaluation.rce, evaluation.mean_reliance)
+```
+
+Here `evaluation.rce` is a model-predicted off-policy diagnostic. For observed team outcomes, use
+`rce(displayed, final_team_correct)` directly. The expected columns and estimands are documented in
+[docs/METHOD.md](docs/METHOD.md).
+
+> **Before deployment:** `g1`, `g2`, and `g3` encode estimates and safeguards from the paper; they
+> are not universal calibration maps. Refit or validate a policy on your population, preserve a
+> held-out evaluation set, and retain a direct-display fallback.
+
+## What you can do with this repository
+
+- **Audit your own human-AI logs:** call `rce(displayed, final_team_correct)` to quantify whether a
+  shown score matches final team correctness.
+- **Prototype a display layer:** call `g0`, `g1`, `g3`, or `bounded_g1` without modifying or
+  retraining the underlying predictor.
+- **Learn a user-state-aware map:** use `fit_g2` on training interactions and `apply_g2` on new
+  interactions; sparse or missing self-confidence groups use the global fallback.
+- **Compare candidate displays offline:** fit the baseline reliance model once, then call
+  `evaluate_policy` for each candidate display vector.
+- **Reproduce and inspect the paper:** regenerate the accepted analysis tables from pinned public
+  data and verify them numerically against the checked-in reference outputs.
+
 ## Why calibrated confidence is not enough
 
 A statistically calibrated model can still induce poorly calibrated human reliance. People combine
@@ -52,24 +135,11 @@ The distinction matters empirically: in the primary HAIID condition, conventiona
   <img src="docs/assets/reliance_reliability.png" width="760" alt="Reliance reliability diagram across HAIID tasks">
 </p>
 
-## Contributions
-
-- **A new team-level target.** Calibrated reliance evaluates the meaning of confidence after human
-  interpretation, not just the model in isolation.
-- **A measurable error.** RCE uses the familiar reliability-diagram template with final team
-  correctness replacing model correctness.
-- **A display-policy framework.** `g0`-`g3` separate direct, global, subgroup-aware, and bounded
-  confidence communication without changing the underlying predictor.
-- **Large-scale behavioral evidence.** The source HAIID dataset contains 35,670 interactions across
-  visual, textual, and tabular tasks; the main policy cohort contains 28,168 records before the
-  held-out 70/30 split.
-- **A deployment warning.** Reliance varies with user state, while aggressive remapping can create
-  semantically misleading boundary values. A population average is not a deployment guarantee.
-- **Diagnostics beyond one split.** The package covers overlap, clipping, display shift, RCE
-  binning, participant jackknife, reliance-model choice, participant/item-disjoint splits, and
-  user-state perturbations.
-
 ## The confidence-display policies
+
+<p align="center">
+  <img src="docs/assets/policy_overview.svg" width="920" alt="Exact g0, g1, and g3 display curves and the training and application flow for g2">
+</p>
 
 | Policy | Definition | Interpretation |
 |---|---|---|
@@ -111,9 +181,11 @@ Three patterns are especially important:
 3. `g3` preserves much of the simulated MSE gain while eliminating 0/1 displays, making bounded
    policies the more defensible design direction.
 
-The verified release intentionally centers the final revision diagnostic matrix. It does not mix in
-legacy task- or subgroup-effect plots generated under earlier all-condition/simple-model pipelines,
-because those use a different analysis slice and response-model specification.
+The verified release replaces legacy task/subgroup plots from earlier analysis specifications with
+the canonical numeric
+[`task/user-state sensitivity table`](results/reference/tables/tab_revision_task_user_state_sensitivity.csv).
+It uses the same final cohort, split, and reliance model as the main policy comparison and can be
+regenerated without any plotting scripts.
 
 ## Reproduce the accepted-paper analysis
 
@@ -187,6 +259,7 @@ make test            # data-free unit tests
 |---|---|---|
 | HAIID preprocessing and accepted 70/30 task-stratified split | `scripts/reproduce.py` | Reproduced from pinned public data |
 | `g0`-`g3`, model-predicted MSE/RCE, plug-in RCE | `scripts/reproduce.py` | Reproduced |
+| Canonical task- and user-state sensitivity for `g1` versus `g0` | `scripts/reproduce.py` | Reproduced as a verified numeric table |
 | Support, clipping, and display-shift diagnostics | `scripts/reproduce.py` | Reproduced |
 | Binning, jackknife, user-state, subgroup, and bounded-policy checks | `--profile core` | Reproduced |
 | Reliance-model and disjoint-split sensitivity | `--profile full` | Reproduced |
@@ -270,7 +343,7 @@ The original code in this repository is released under the [MIT License](LICENSE
 datasets and aggregate results remain governed by their own licenses and citation requirements;
 the project license does not override those terms.
 
-## Questions and contributions
+## Report a reproducibility issue
 
 Reproducibility reports are welcome through GitHub Issues. When reporting a discrepancy, include
 your Python version, dependency versions, command, and the relevant generated/reference filenames.

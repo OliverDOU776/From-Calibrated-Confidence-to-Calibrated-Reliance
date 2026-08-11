@@ -6,9 +6,10 @@ The implementation is the public-release counterpart of the canonical
 the requested generated-output directory and never mutates manuscript assets.
 
 ``core`` generates the primary policy, support, observed plug-in RCE,
-subgroup, bounded-policy, interface, private-information, and planning
-diagnostics.  ``full`` additionally fits the slower reliance-model sensitivity
-suite and reruns the analysis under alternative train/validation splits.
+task/user-state sensitivity, subgroup, bounded-policy, interface,
+private-information, and planning diagnostics.  ``full`` additionally fits the
+slower reliance-model sensitivity suite and reruns the analysis under
+alternative train/validation splits.
 """
 
 from __future__ import annotations
@@ -43,6 +44,7 @@ RNG = 42
 
 CORE_TABLES = (
     "tab_revision_main_policy_eval.csv",
+    "tab_revision_task_user_state_sensitivity.csv",
     "tab_revision_support_coverage.csv",
     "tab_revision_clipping_shift.csv",
     "tab_revision_rce_binning_sensitivity.csv",
@@ -87,7 +89,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Reproduce accepted-paper HAIID diagnostics. The core profile writes "
-            "11 tables plus the display-shift figure; full adds model and split sensitivity."
+            "12 tables plus the display-shift figure; full adds model and split sensitivity."
         )
     )
     parser.add_argument(
@@ -439,6 +441,86 @@ def eval_policy_table(
                 "Display_sd": float(np.std(displayed)),
             }
         )
+    return pd.DataFrame(rows)
+
+
+def relative_reduction_pct(baseline: float, candidate: float) -> float:
+    """Return the percentage reduction from a positive lower-is-better baseline.
+
+    Positive values mean that the candidate has lower error than the baseline;
+    negative values mean that it is worse.  The explicit sign convention keeps
+    MSE and RCE comparisons interpretable in the same long-format table.
+    """
+
+    if not np.isfinite(baseline) or not np.isfinite(candidate):
+        raise ValueError("Relative-reduction inputs must be finite.")
+    if baseline <= 0:
+        raise ValueError("Relative-reduction baseline must be positive.")
+    return 100.0 * (baseline - candidate) / baseline
+
+
+def task_user_state_sensitivity(
+    pipe: Pipeline,
+    val_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Compare g1 with g0 by task and pre-advice self-confidence tercile.
+
+    Model-predicted team MSE uses the fitted baseline reliance model.  The
+    task-level RCE rows instead use observed post-advice correctness as the
+    plug-in outcome with the canonical 10 equal-width confidence bins.  This
+    distinction is retained in the metric names rather than blending the two
+    estimands.
+    """
+
+    rows: list[dict[str, object]] = []
+    stratum_specs = (
+        ("task", "task_name", MAIN_TASKS, True),
+        ("pre_conf_tercile", "pre_conf_tercile", ("low", "mid", "high"), False),
+    )
+    for stratum_type, column, levels, include_plugin_rce in stratum_specs:
+        for level in levels:
+            subgroup = val_df.loc[val_df[column] == level].copy()
+            if subgroup.empty:
+                raise ValueError(
+                    f"Canonical sensitivity stratum is empty: {stratum_type}={level}"
+                )
+            direct = g0(subgroup)
+            remapped = g1(subgroup)
+            g0_mse = team_mse_and_rce(pipe, subgroup, direct)[0]
+            g1_mse = team_mse_and_rce(pipe, subgroup, remapped)[0]
+            rows.append(
+                {
+                    "Stratum_type": stratum_type,
+                    "Stratum": level,
+                    "n": len(subgroup),
+                    "Metric": "model_predicted_team_mse",
+                    "g0": g0_mse,
+                    "g1": g1_mse,
+                    "g1_relative_reduction_pct": relative_reduction_pct(g0_mse, g1_mse),
+                }
+            )
+
+            if include_plugin_rce:
+                observed = subgroup["correct_post"].to_numpy()
+                g0_rce = rce_from_values(
+                    direct, observed, bins=10, scheme="equal_width"
+                )
+                g1_rce = rce_from_values(
+                    remapped, observed, bins=10, scheme="equal_width"
+                )
+                rows.append(
+                    {
+                        "Stratum_type": stratum_type,
+                        "Stratum": level,
+                        "n": len(subgroup),
+                        "Metric": "plugin_observed_outcome_rce",
+                        "g0": g0_rce,
+                        "g1": g1_rce,
+                        "g1_relative_reduction_pct": relative_reduction_pct(
+                            g0_rce, g1_rce
+                        ),
+                    }
+                )
     return pd.DataFrame(rows)
 
 
@@ -974,6 +1056,9 @@ def reproduce(profile: str, data_path: Path, output_dir: Path) -> tuple[str, ...
     support, shift = support_and_shift(train_df, val_df, policies)
     core_outputs = {
         "tab_revision_main_policy_eval.csv": main_eval,
+        "tab_revision_task_user_state_sensitivity.csv": (
+            task_user_state_sensitivity(base_pipe, val_df)
+        ),
         "tab_revision_support_coverage.csv": support,
         "tab_revision_clipping_shift.csv": shift,
         "tab_revision_rce_binning_sensitivity.csv": rce_binning_sensitivity(

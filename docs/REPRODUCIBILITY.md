@@ -54,6 +54,7 @@ inputs produce a nonzero exit rather than a synthetic fallback.
 package:
 
 - `tab_revision_main_policy_eval.csv`
+- `tab_revision_task_user_state_sensitivity.csv`
 - `tab_revision_support_coverage.csv`
 - `tab_revision_clipping_shift.csv`
 - `tab_revision_rce_binning_sensitivity.csv`
@@ -82,6 +83,7 @@ longer than the core profile.
 |---|---|
 | Direct confidence is not team-calibrated | RCE binning and jackknife tables |
 | `g1` improves model-predicted MSE but creates extreme displays | Main policy, clipping, and display-shift outputs |
+| `g1`'s effects vary by task, metric, and pre-advice self-confidence | Task/user-state sensitivity output |
 | `g2` gives strongest plug-in alignment but is governance-limited | RCE binning, main policy, subgroup-noise, and subgroup-definition outputs |
 | `g3` avoids 0/1 displays while retaining simulated MSE gains | Main policy, clipping, and bounded-frontier outputs |
 | Findings depend on the response model and split assumptions | Reliance-model and split-sensitivity outputs |
@@ -103,6 +105,20 @@ longer than the core profile.
 
 Reference files are read-only inputs to verification. Reproduction writes exclusively to
 `results/generated/`.
+
+### Task and user-state sensitivity convention
+
+`tab_revision_task_user_state_sensitivity.csv` is a compact long-format comparison of `g1`
+against direct display (`g0`) on the canonical validation partition:
+
+- every task has model-predicted team MSE and 10-bin equal-width plug-in observed-outcome RCE rows;
+- every pre-advice self-confidence tercile has a model-predicted team MSE row;
+- `g1_relative_reduction_pct` is positive when `g1` lowers the metric and negative when it worsens
+  the metric.
+
+The table deliberately names the two estimands separately. Model-predicted MSE is an off-policy
+simulation through the fitted reliance model; plug-in RCE evaluates displayed confidence against
+the observed post-advice outcome and is not a causal counterfactual estimate.
 
 ## Determinism
 

@@ -19,6 +19,7 @@ DEFAULT_RTOL = 1e-9
 
 CORE_TABLES = (
     "tab_revision_main_policy_eval.csv",
+    "tab_revision_task_user_state_sensitivity.csv",
     "tab_revision_support_coverage.csv",
     "tab_revision_clipping_shift.csv",
     "tab_revision_rce_binning_sensitivity.csv",
