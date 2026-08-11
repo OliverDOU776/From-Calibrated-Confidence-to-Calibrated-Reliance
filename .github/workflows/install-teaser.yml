@@ -1,0 +1,54 @@
+name: Install README teaser
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/install-teaser.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode and verify teaser image
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat docs/assets/.teaser_parts/part*.b64 | tr -d '\n\r' | base64 --decode > docs/assets/calibrated_reliance_teaser.webp
+          echo "837abc73a3ea6129a9d3a8cd6239865442d498e7b0cd7a96de8fad1b5e20f84e  docs/assets/calibrated_reliance_teaser.webp" | sha256sum --check -
+
+      - name: Replace the homepage teaser
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("README.md")
+          text = path.read_text(encoding="utf-8")
+          old = '<img src="docs/assets/architecture.svg" width="960" alt="Human-aware confidence communication and evaluation framework">'
+          new = '<img src="docs/assets/calibrated_reliance_teaser.webp" width="960" alt="Calibrated reliance teaser: from model confidence to better human-AI team decisions">'
+          if old not in text:
+              raise SystemExit("Current teaser reference was not found in README.md")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+      - name: Commit the new teaser
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r docs/assets/.teaser_parts
+          git add README.md docs/assets/calibrated_reliance_teaser.webp
+          git commit -m "Replace README teaser image"
+          git push
